@@ -74,5 +74,20 @@ export class UserService {
       createTime: user.createTime.getTime(),
       isFrozen: user.isFrozen,
     };
+    return vo;
+  }
+
+  async findUserById(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['roles', 'roles.permissions'],
+    });
+
+    return {
+      id: user.id,
+      username: user.username,
+    };
   }
 }
