@@ -60,11 +60,11 @@ export class UserService {
     });
 
     if (!user) {
-      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException('登录异常', HttpStatus.BAD_REQUEST);
     }
 
     if (user.password !== md5(loginUserDto.password)) {
-      throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
+      throw new HttpException('登录异常', HttpStatus.BAD_REQUEST);
     }
 
     const vo = new LoginUserVo();
@@ -103,7 +103,7 @@ export class UserService {
     return user;
   }
 
-  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+  async updatePassword(passwordDto: UpdateUserPasswordDto) {
     const captcha = await this.redisService.get(
       `update_password_captcha_${passwordDto.email}`,
     );
@@ -118,7 +118,7 @@ export class UserService {
     }
 
     const foundUser = await this.userRepository.findOneBy({
-      id: userId,
+      email: passwordDto.email,
     });
 
     foundUser.password = md5(passwordDto.password);

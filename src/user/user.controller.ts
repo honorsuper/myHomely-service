@@ -43,7 +43,6 @@ export class UserController {
   @Get('register-captcha')
   async captcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);
-    console.log('address', address);
     await this.redisService.set(`captcha_${address}`, code, 5 * 60);
 
     await this.emailService.sendMail({
@@ -134,15 +133,11 @@ export class UserController {
   }
 
   @Post('update_password')
-  @RequireLogin()
-  async updatePassword(
-    @UserInfo('userId') userId: number,
-    @Body() passwordDto: UpdateUserPasswordDto,
-  ) {
-    return await this.userService.updatePassword(userId, passwordDto);
+  async updatePassword(@Body() passwordDto: UpdateUserPasswordDto) {
+    return await this.userService.updatePassword(passwordDto);
   }
 
-  @Get('update_password/captcha')
+  @Get('update_password-captcha')
   async updatePasswordCaptcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);
 
@@ -169,7 +164,7 @@ export class UserController {
     return await this.userService.update(userId, updateUserDto);
   }
 
-  @Get('update/captcha')
+  @Get('update-captcha')
   async updateCaptcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);
 
