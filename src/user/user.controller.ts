@@ -18,6 +18,7 @@ import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/udpate-user.dto';
+import { MenuService } from 'src/menu/menu.service';
 
 @Controller('user')
 export class UserController {
@@ -32,6 +33,9 @@ export class UserController {
 
   @Inject(ConfigService)
   private configService: ConfigService;
+
+  @Inject(MenuService)
+  private menuService: MenuService;
 
   constructor(private readonly userService: UserService) {}
 
@@ -82,6 +86,7 @@ export class UserController {
 
   @Get('refresh')
   async refresh(@Query('refreshToken') refreshToken: string) {
+    console.log('refreshToken', refreshToken);
     try {
       const data = this.jwtService.verify(refreshToken);
 

@@ -9,6 +9,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { LoginUserVo } from './vo/login-user.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/udpate-user.dto';
+import { MenuService } from 'src/menu/menu.service';
 
 @Injectable()
 export class UserService {
@@ -16,6 +17,8 @@ export class UserService {
   private userRepository: Repository<User>;
   @Inject(RedisService)
   private redisService: RedisService;
+  @Inject(MenuService)
+  private menuService: MenuService;
 
   async register(user: RegisterUserDto) {
     const captcha = await this.redisService.get(`captcha_${user.email}`);
@@ -43,7 +46,8 @@ export class UserService {
     newUser.nickName = user.nickName;
 
     try {
-      await this.userRepository.save(newUser);
+      const res = await this.userRepository.save(newUser);
+      await this.menuService.initColumn(res?.id);
       return '注册成功';
     } catch (e) {
       // TODO: 需要添加日志模块

@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { MenuModule } from './menu/menu.module';
 import { User } from './user/entities/user.entity';
+import { Menu } from './menu/entities/menu.entity';
 import { RedisModule } from './redis/redis.module';
 import { EmailModule } from './email/email.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -42,7 +43,7 @@ import { LoginGuard } from './login/login.guard';
           database: configService.get('mysql_server_database'),
           synchronize: true,
           logging: true,
-          entities: [User],
+          entities: [User, Menu],
           poolSize: 10,
           connectorPackage: 'mysql2',
           extra: {
