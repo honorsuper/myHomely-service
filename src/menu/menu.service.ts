@@ -8,6 +8,7 @@ import {
   DelColumnDto,
   EditColumnDto,
   RenameColumnDto,
+  SortColumnDto,
 } from './dto';
 
 @Injectable()
@@ -127,6 +128,30 @@ export class MenuService {
         item.mainTitle = data.mainTitle;
       }
     });
+    findConfig.menuConfig = JSON.stringify(newMenuConfig);
+
+    try {
+      this.userMenuRepository.save(findConfig);
+      return '修改成功';
+    } catch (e) {
+      // TODO: 以后
+      // this.logger.error(e, UserService);
+      return '修改失败';
+    }
+  }
+
+  async sortColumn(userId: number, data: SortColumnDto) {
+    const findConfig = await this.userMenuRepository.findOneBy({
+      userId,
+    });
+    const newMenuConfig = JSON.parse(findConfig.menuConfig);
+
+    newMenuConfig[data.toIndex] = newMenuConfig.splice(
+      data.fromIndex,
+      1,
+      newMenuConfig[data.toIndex],
+    )[0];
+
     findConfig.menuConfig = JSON.stringify(newMenuConfig);
 
     try {

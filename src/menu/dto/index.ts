@@ -46,3 +46,14 @@ export class DelColumnDto {
   })
   id: number;
 }
+
+export class SortColumnDto {
+  @IsNotEmpty({
+    message: '原始位置不能为空',
+  })
+  fromIndex: number;
+  @IsNotEmpty({
+    message: '终点位置不能为空',
+  })
+  toIndex: number;
+}

@@ -5,6 +5,7 @@ import {
   DelColumnDto,
   EditColumnDto,
   RenameColumnDto,
+  SortColumnDto,
 } from './dto';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 
@@ -52,5 +53,14 @@ export class MenuController {
     @Body() data: DelColumnDto,
   ) {
     return await this.menuService.delColumn(userId, data);
+  }
+
+  @Post('sort-column')
+  @RequireLogin()
+  async sortColumn(
+    @UserInfo('userId') userId: number,
+    @Body() data: SortColumnDto,
+  ) {
+    return await this.menuService.sortColumn(userId, data);
   }
 }

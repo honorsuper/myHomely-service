@@ -124,8 +124,11 @@ export class UserService {
     const foundUser = await this.userRepository.findOneBy({
       email: passwordDto.email,
     });
-
-    foundUser.password = md5(passwordDto.password);
+    if (foundUser) {
+      foundUser.password = md5(passwordDto.password);
+    } else {
+      throw new HttpException('密码修改失败', HttpStatus.BAD_REQUEST);
+    }
 
     try {
       await this.userRepository.save(foundUser);
