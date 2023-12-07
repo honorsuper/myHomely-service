@@ -10,6 +10,8 @@ interface UserInfo {
   isFrozen: boolean;
 
   createTime: number;
+
+  colorConfig: string;
 }
 export class LoginUserVo {
   userInfo: UserInfo;

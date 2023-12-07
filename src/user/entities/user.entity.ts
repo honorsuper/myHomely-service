@@ -54,6 +54,12 @@ export class User {
   })
   isFrozen: boolean;
 
+  @Column({
+    comment: '颜色配置',
+    type: 'longtext',
+  })
+  colorConfig: string;
+
   @CreateDateColumn()
   createTime: Date;
 

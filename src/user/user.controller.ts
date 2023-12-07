@@ -17,7 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
-import { UpdateUserDto } from './dto/udpate-user.dto';
+import { UpdateColorDto, UpdateUserDto } from './dto/udpate-user.dto';
 import { MenuService } from 'src/menu/menu.service';
 
 @Controller('user')
@@ -125,15 +125,7 @@ export class UserController {
   @Get('info')
   @RequireLogin()
   async info(@UserInfo('userId') userId: number) {
-    const user = await this.userService.findUserDetailById(userId);
-
-    const vo = new UserDetailVo();
-    vo.id = user.id;
-    vo.email = user.email;
-    vo.username = user.username;
-    vo.nickName = user.nickName;
-    vo.createTime = user.createTime;
-    vo.isFrozen = user.isFrozen;
+    const vo = await this.userService.findUserDetailById(userId);
     return vo;
   }
 
@@ -185,5 +177,14 @@ export class UserController {
       html: `<p>你的验证码是 ${code}</p>`,
     });
     return '发送成功';
+  }
+
+  @Post('update-color')
+  @RequireLogin()
+  async updateColor(
+    @UserInfo('userId') userId: number,
+    @Body() updateColorDto: UpdateColorDto,
+  ) {
+    return await this.userService.updateColor(userId, updateColorDto);
   }
 }
