@@ -91,7 +91,6 @@ export class UserService {
       where: {
         id: userId,
       },
-      relations: ['roles', 'roles.permissions'],
     });
 
     return {

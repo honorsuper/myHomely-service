@@ -34,9 +34,6 @@ export class UserController {
   @Inject(ConfigService)
   private configService: ConfigService;
 
-  @Inject(MenuService)
-  private menuService: MenuService;
-
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
@@ -85,12 +82,19 @@ export class UserController {
   }
 
   @Get('refresh')
-  async refresh(@Query('refreshToken') refreshToken: string) {
+  async refresh(@Query('refresh_token') refreshToken: string) {
     console.log('refreshToken', refreshToken);
+
     try {
       const data = this.jwtService.verify(refreshToken);
 
-      const user = await this.userService.findUserById(data.userId);
+      let user = null;
+      try {
+        console.log('111');
+        user = await this.userService.findUserById(data.userId);
+      } catch (err) {
+        console.log('err', err);
+      }
 
       const access_token = this.jwtService.sign(
         {
