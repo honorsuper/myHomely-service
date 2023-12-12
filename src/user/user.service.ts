@@ -200,4 +200,52 @@ export class UserService {
       return '颜色配置修改失败';
     }
   }
+
+  async resetColor(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    user.colorConfig = JSON.stringify(COLOR_LIST);
+    try {
+      await this.userRepository.save(user);
+      return '颜色配置重置成功';
+    } catch (e) {
+      // TODO
+      // this.logger.error(e, UserService);
+      return '颜色配置重置失败';
+    }
+  }
+
+  async setFirst(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    user.isFirst = false;
+    try {
+      await this.userRepository.save(user);
+      return '上报成功';
+    } catch (e) {
+      // TODO
+      // this.logger.error(e, UserService);
+      return '上报失败';
+    }
+  }
+
+  async getIsFirst(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    return {
+      isFirst: user.isFirst,
+    };
+  }
 }

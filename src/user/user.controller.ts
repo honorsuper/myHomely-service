@@ -189,4 +189,22 @@ export class UserController {
   ) {
     return await this.userService.updateColor(userId, updateColorDto);
   }
+
+  @Get('reset-color')
+  @RequireLogin()
+  async resetColor(@UserInfo('userId') userId: number) {
+    return await this.userService.resetColor(userId);
+  }
+
+  @Get('set-first')
+  @RequireLogin()
+  async setFirst(@UserInfo('userId') userId: number) {
+    return await this.userService.setFirst(userId);
+  }
+
+  @Get('is-first')
+  @RequireLogin()
+  async getIsFirst(@UserInfo('userId') userId: number) {
+    return await this.userService.getIsFirst(userId);
+  }
 }

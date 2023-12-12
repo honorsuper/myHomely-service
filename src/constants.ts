@@ -10,23 +10,23 @@ export const COLOR_LIST = [
     color: '#ffffff',
   },
   {
-    bgColor: '#337ab7',
+    bgColor: '#2563eb',
     color: '#ffffff',
   },
   {
-    bgColor: '#5bc0de',
+    bgColor: '#14b8a6',
     color: '#ffffff',
   },
   {
-    bgColor: '#449d44',
+    bgColor: '#fbbf24',
     color: '#ffffff',
   },
   {
-    bgColor: '#f0ad4e',
+    bgColor: '#EC4899',
     color: '#ffffff',
   },
   {
-    bgColor: '#d9534f',
+    bgColor: '#8b5cf6',
     color: '#ffffff',
   },
 ];
