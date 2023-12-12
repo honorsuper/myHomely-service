@@ -188,6 +188,7 @@ export class UserService {
         id: userId,
       },
     });
+
     user.colorConfig = JSON.stringify(updateColorDto.colorList);
 
     try {
