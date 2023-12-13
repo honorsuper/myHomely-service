@@ -10,6 +10,7 @@ import {
   RenameColumnDto,
   SortColumnDto,
 } from './dto';
+import { MENU_CONFIG } from 'src/constants';
 
 @Injectable()
 export class MenuService {
@@ -19,22 +20,7 @@ export class MenuService {
   async initColumn(userId: number) {
     const newMenu = new Menu();
     newMenu.userId = userId;
-    newMenu.menuConfig = JSON.stringify([
-      {
-        id: v4(),
-        mainTitle: '资讯',
-        list: [
-          {
-            title: '百度',
-            url: 'https://www.baidu.com/',
-            id: 0,
-            isGroup: 0,
-            bgColor: '#cccccc',
-            color: '#000000',
-          },
-        ],
-      },
-    ]);
+    newMenu.menuConfig = JSON.stringify(MENU_CONFIG);
 
     this.userMenuRepository.save(newMenu);
   }

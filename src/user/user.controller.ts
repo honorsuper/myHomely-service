@@ -15,10 +15,8 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
-import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
-import { UpdateUserDto } from './dto/udpate-user.dto';
-import { MenuService } from 'src/menu/menu.service';
+import { UpdateColorDto, UpdateUserDto } from './dto/udpate-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -33,9 +31,6 @@ export class UserController {
 
   @Inject(ConfigService)
   private configService: ConfigService;
-
-  @Inject(MenuService)
-  private menuService: MenuService;
 
   constructor(private readonly userService: UserService) {}
 
@@ -85,12 +80,19 @@ export class UserController {
   }
 
   @Get('refresh')
-  async refresh(@Query('refreshToken') refreshToken: string) {
+  async refresh(@Query('refresh_token') refreshToken: string) {
     console.log('refreshToken', refreshToken);
+
     try {
       const data = this.jwtService.verify(refreshToken);
 
-      const user = await this.userService.findUserById(data.userId);
+      let user = null;
+      try {
+        console.log('111');
+        user = await this.userService.findUserById(data.userId);
+      } catch (err) {
+        console.log('err', err);
+      }
 
       const access_token = this.jwtService.sign(
         {
@@ -125,15 +127,7 @@ export class UserController {
   @Get('info')
   @RequireLogin()
   async info(@UserInfo('userId') userId: number) {
-    const user = await this.userService.findUserDetailById(userId);
-
-    const vo = new UserDetailVo();
-    vo.id = user.id;
-    vo.email = user.email;
-    vo.username = user.username;
-    vo.nickName = user.nickName;
-    vo.createTime = user.createTime;
-    vo.isFrozen = user.isFrozen;
+    const vo = await this.userService.findUserDetailById(userId);
     return vo;
   }
 
@@ -185,5 +179,32 @@ export class UserController {
       html: `<p>你的验证码是 ${code}</p>`,
     });
     return '发送成功';
+  }
+
+  @Post('update-color')
+  @RequireLogin()
+  async updateColor(
+    @UserInfo('userId') userId: number,
+    @Body() updateColorDto: UpdateColorDto,
+  ) {
+    return await this.userService.updateColor(userId, updateColorDto);
+  }
+
+  @Get('reset-color')
+  @RequireLogin()
+  async resetColor(@UserInfo('userId') userId: number) {
+    return await this.userService.resetColor(userId);
+  }
+
+  @Get('set-first')
+  @RequireLogin()
+  async setFirst(@UserInfo('userId') userId: number) {
+    return await this.userService.setFirst(userId);
+  }
+
+  @Get('is-first')
+  @RequireLogin()
+  async getIsFirst(@UserInfo('userId') userId: number) {
+    return await this.userService.getIsFirst(userId);
   }
 }

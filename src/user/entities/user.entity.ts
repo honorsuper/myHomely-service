@@ -41,18 +41,23 @@ export class User {
   })
   email: string;
 
-  // @Column({
-  //   comment: '手机号',
-  //   length: 20,
-  //   nullable: true,
-  // })
-  // phoneNumber: string;
+  @Column({
+    comment: '是否首次进入',
+    default: true,
+  })
+  isFirst: boolean;
 
   @Column({
     comment: '是否冻结',
     default: false,
   })
   isFrozen: boolean;
+
+  @Column({
+    comment: '颜色配置',
+    type: 'longtext',
+  })
+  colorConfig: string;
 
   @CreateDateColumn()
   createTime: Date;

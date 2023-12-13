@@ -21,3 +21,10 @@ export class UpdateUserDto {
   })
   captcha: string;
 }
+
+export class UpdateColorDto {
+  @IsNotEmpty({
+    message: '不能为空',
+  })
+  colorList: object;
+}

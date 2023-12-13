@@ -2,9 +2,9 @@
   "name": "myhomely-service",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "license": "MIT",
+  "author": "honorsuper<honorsuper@126.com>",
   "private": true,
-  "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

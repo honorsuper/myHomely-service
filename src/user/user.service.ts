@@ -8,8 +8,9 @@ import { md5 } from 'src/utils';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginUserVo } from './vo/login-user.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
-import { UpdateUserDto } from './dto/udpate-user.dto';
+import { UpdateColorDto, UpdateUserDto } from './dto/udpate-user.dto';
 import { MenuService } from 'src/menu/menu.service';
+import { COLOR_LIST } from 'src/constants';
 
 @Injectable()
 export class UserService {
@@ -44,6 +45,7 @@ export class UserService {
     newUser.password = md5(user.password);
     newUser.email = user.email;
     newUser.nickName = user.nickName;
+    newUser.colorConfig = JSON.stringify(COLOR_LIST);
 
     try {
       const res = await this.userRepository.save(newUser);
@@ -79,6 +81,7 @@ export class UserService {
       email: user.email,
       createTime: user.createTime.getTime(),
       isFrozen: user.isFrozen,
+      colorConfig: user.colorConfig,
     };
     return vo;
   }
@@ -88,7 +91,6 @@ export class UserService {
       where: {
         id: userId,
       },
-      relations: ['roles', 'roles.permissions'],
     });
 
     return {
@@ -103,8 +105,17 @@ export class UserService {
         id: userId,
       },
     });
-
-    return user;
+    const vo = new LoginUserVo();
+    vo.userInfo = {
+      id: user.id,
+      username: user.username,
+      nickName: user.nickName,
+      email: user.email,
+      createTime: user.createTime.getTime(),
+      isFrozen: user.isFrozen,
+      colorConfig: user.colorConfig,
+    };
+    return vo;
   }
 
   async updatePassword(passwordDto: UpdateUserPasswordDto) {
@@ -167,7 +178,74 @@ export class UserService {
     } catch (e) {
       // TODO
       // this.logger.error(e, UserService);
-      return '用户信息修改成功';
+      return '用户信息修改失败';
     }
+  }
+
+  async updateColor(userId: number, updateColorDto: UpdateColorDto) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    user.colorConfig = JSON.stringify(updateColorDto.colorList);
+
+    try {
+      await this.userRepository.save(user);
+      return '颜色配置修改成功';
+    } catch (e) {
+      // TODO
+      // this.logger.error(e, UserService);
+      return '颜色配置修改失败';
+    }
+  }
+
+  async resetColor(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    user.colorConfig = JSON.stringify(COLOR_LIST);
+    try {
+      await this.userRepository.save(user);
+      return '颜色配置重置成功';
+    } catch (e) {
+      // TODO
+      // this.logger.error(e, UserService);
+      return '颜色配置重置失败';
+    }
+  }
+
+  async setFirst(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    user.isFirst = false;
+    try {
+      await this.userRepository.save(user);
+      return '上报成功';
+    } catch (e) {
+      // TODO
+      // this.logger.error(e, UserService);
+      return '上报失败';
+    }
+  }
+
+  async getIsFirst(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    return {
+      isFirst: user.isFirst,
+    };
   }
 }
