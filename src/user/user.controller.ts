@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Inject,
   Post,
   Query,
@@ -17,6 +19,7 @@ import { ConfigService } from '@nestjs/config';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateColorDto, UpdateUserDto } from './dto/udpate-user.dto';
+import { CustomException } from 'src/exception/customException';
 
 @Controller('user')
 export class UserController {
@@ -41,13 +44,18 @@ export class UserController {
 
   @Get('register-captcha')
   async captcha(@Query('address') address: string) {
+    const key = `captcha_${address}`;
+    const res = await this.redisService.get(key);
+    if (res) {
+      throw new CustomException(1, '请勿重复发送');
+    }
     const code = Math.random().toString().slice(2, 8);
-    await this.redisService.set(`captcha_${address}`, code, 5 * 60);
+    await this.redisService.set(key, code, 5 * 60);
 
     await this.emailService.sendMail({
       to: address,
       subject: '注册验证码',
-      html: `<p>你的注册验证码是 ${code}</p>`,
+      html: `<p>你的注册验证码是 ${code}，5分钟内有效</p>`,
     });
     return '发送成功';
   }
