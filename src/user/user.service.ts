@@ -118,6 +118,15 @@ export class UserService {
     return vo;
   }
 
+  async findUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+    });
+    return user.username;
+  }
+
   async updatePassword(passwordDto: UpdateUserPasswordDto) {
     const captcha = await this.redisService.get(
       `update_password_captcha_${passwordDto.email}`,

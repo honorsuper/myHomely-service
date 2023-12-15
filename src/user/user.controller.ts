@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Inject,
   Post,
   Query,
@@ -20,6 +18,7 @@ import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateColorDto, UpdateUserDto } from './dto/udpate-user.dto';
 import { CustomException } from 'src/exception/customException';
+import { verifyEmail } from 'src/utils';
 
 @Controller('user')
 export class UserController {
@@ -44,13 +43,19 @@ export class UserController {
 
   @Get('register-captcha')
   async captcha(@Query('address') address: string) {
+    verifyEmail(address);
     const key = `captcha_${address}`;
     const res = await this.redisService.get(key);
     if (res) {
-      throw new CustomException(1, '请勿重复发送');
+      throw new CustomException(1, '请勿重复发送，请稍后重试');
+    }
+
+    const pre = await this.userService.findUserByEmail(address);
+    if (pre) {
+      throw new CustomException(1, '该邮箱已使用');
     }
     const code = Math.random().toString().slice(2, 8);
-    await this.redisService.set(key, code, 5 * 60);
+    await this.redisService.set(key, code, 1 * 60);
 
     await this.emailService.sendMail({
       to: address,
@@ -89,8 +94,6 @@ export class UserController {
 
   @Get('refresh')
   async refresh(@Query('refresh_token') refreshToken: string) {
-    console.log('refreshToken', refreshToken);
-
     try {
       const data = this.jwtService.verify(refreshToken);
 
@@ -146,13 +149,15 @@ export class UserController {
 
   @Get('update_password-captcha')
   async updatePasswordCaptcha(@Query('address') address: string) {
+    verifyEmail(address);
+    const key = `update_password_captcha_${address}`;
+    const res = await this.redisService.get(key);
+    if (res) {
+      throw new CustomException(1, '请勿重复发送，请稍后重试');
+    }
     const code = Math.random().toString().slice(2, 8);
 
-    await this.redisService.set(
-      `update_password_captcha_${address}`,
-      code,
-      10 * 60,
-    );
+    await this.redisService.set(key, code, 1 * 60);
 
     await this.emailService.sendMail({
       to: address,
@@ -173,13 +178,19 @@ export class UserController {
 
   @Get('update-captcha')
   async updateCaptcha(@Query('address') address: string) {
+    verifyEmail(address);
+    const key = `update_user_captcha_${address}`;
+    const res = await this.redisService.get(key);
+    if (res) {
+      throw new CustomException(1, '请勿重复发送，请稍后重试');
+    }
+    const pre = await this.userService.findUserByEmail(address);
+    if (pre) {
+      throw new CustomException(1, '该邮箱已使用');
+    }
     const code = Math.random().toString().slice(2, 8);
 
-    await this.redisService.set(
-      `update_user_captcha_${address}`,
-      code,
-      10 * 60,
-    );
+    await this.redisService.set(key, code, 1 * 60);
 
     await this.emailService.sendMail({
       to: address,
