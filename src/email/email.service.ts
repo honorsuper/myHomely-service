@@ -18,10 +18,10 @@ export class EmailService {
     });
   }
 
-  async sendMail({ to, subject, html }) {
+  async sendMail({ to, subject, html, name = 'my-homely验证码' }) {
     await this.transporter.sendMail({
       from: {
-        name: 'my-homely验证码',
+        name,
         address: this.configService.get('nodemailer_auth_user'),
       },
       to,
