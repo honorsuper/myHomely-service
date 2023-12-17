@@ -5,6 +5,7 @@ services:
       dockerfile: ./Dockerfile
     depends_on:
       - mysql-container
+      - redis-container
     ports:
       - '3000:3000'
   mysql-container:
@@ -16,3 +17,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: xxxxxx #访问密码
       TZ: Asia/Shanghai
+  redis-container:
+    image: redis
+    volumes:
+      - /honorsuper/redis-temp:/data
