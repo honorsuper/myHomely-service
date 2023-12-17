@@ -16,15 +16,3 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: xxxxxx #访问密码
       TZ: Asia/Shanghai
-  nginx:
-    image: nginx:stable-alpine 
-    ports:                          # 映射端口
-      - "80:80"
-      - "443:443"
-    volumes:                        # 挂载数据卷
-      - /etc/localtime:/etc/localtime
-      - /honorsuper/nginx/conf.d:/etc/nginx/conf.d
-      - /honorsuper/nginx/logs:/var/log/nginx
-      - /honorsuper/nginx/cert:/etc/nginx/cert
-    depends_on:                     # 启动顺序
-        - nest-app
