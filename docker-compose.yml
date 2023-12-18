@@ -15,8 +15,8 @@ services:
     volumes:
       - /honorsuper/mysql-temp:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: xxxxxx #访问密码
-      TZ: Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=${mysql_server_password}
+      - TZ: Asia/Shanghai
   redis-container:
     image: redis
     volumes:
