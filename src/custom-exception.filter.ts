@@ -12,7 +12,6 @@ export class CustomExceptionFilter implements ExceptionFilter {
     const response = host.switchToHttp().getResponse<Response>();
 
     response.statusCode = 200;
-    console.log('exception.getStatus()', exception.getResponse());
     const res = exception.getResponse() as {
       code: number;
       message: string;

@@ -99,7 +99,6 @@ export class UserController {
 
       let user = null;
       try {
-        console.log('111');
         user = await this.userService.findUserById(data.userId);
       } catch (err) {
         console.log('err', err);

@@ -131,7 +131,6 @@ export class UserService {
     const captcha = await this.redisService.get(
       `update_password_captcha_${passwordDto.email}`,
     );
-    console.log('captcha', captcha);
 
     if (!captcha) {
       throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);

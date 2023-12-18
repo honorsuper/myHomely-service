@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   nest-app:
     build:
@@ -8,16 +10,27 @@ services:
       - redis-container
     ports:
       - '3000:3000'
+    networks:
+      - common-network
   mysql-container:
     image: mysql
+    restart: always
     ports:
       - '3306:3306'
     volumes:
-      - /honorsuper/mysql-temp:/var/lib/mysql
+      - /Users/honorsuper/mysql-temp:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=${mysql_server_password}
-      - TZ: Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${TIMEZONE}
+    networks:
+      - common-network
   redis-container:
     image: redis
+    restart: always
     volumes:
-      - /honorsuper/redis-temp:/data
+      - /Users/honorsuper/redis-temp:/data
+    networks:
+      - common-network
+networks:
+  common-network:
+    driver: bridge
