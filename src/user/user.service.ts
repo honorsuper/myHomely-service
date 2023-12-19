@@ -124,7 +124,7 @@ export class UserService {
         email,
       },
     });
-    return user.username;
+    return user?.username;
   }
 
   async updatePassword(passwordDto: UpdateUserPasswordDto) {
