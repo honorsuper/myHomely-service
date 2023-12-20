@@ -1,7 +1,7 @@
 {
   "name": "myhomely-service",
   "version": "0.0.1",
-  "description": "",
+  "description": "我的导航书签服务端",
   "license": "MIT",
   "author": "honorsuper<honorsuper@126.com>",
   "private": true,
