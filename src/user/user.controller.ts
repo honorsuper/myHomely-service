@@ -55,7 +55,7 @@ export class UserController {
       throw new CustomException(1, '该邮箱已使用');
     }
     const code = Math.random().toString().slice(2, 8);
-    await this.redisService.set(key, code, 1 * 60);
+    await this.redisService.set(key, code, 5 * 60);
 
     await this.emailService.sendMail({
       to: address,
@@ -156,12 +156,12 @@ export class UserController {
     }
     const code = Math.random().toString().slice(2, 8);
 
-    await this.redisService.set(key, code, 1 * 60);
+    await this.redisService.set(key, code, 5 * 60);
 
     await this.emailService.sendMail({
       to: address,
       subject: '更改密码验证码',
-      html: `<p>你的更改密码验证码是 ${code}</p>`,
+      html: `<p>更改密码验证码是 ${code}，5分钟内有效</p>`,
     });
     return '发送成功';
   }
@@ -189,12 +189,12 @@ export class UserController {
     }
     const code = Math.random().toString().slice(2, 8);
 
-    await this.redisService.set(key, code, 1 * 60);
+    await this.redisService.set(key, code, 5 * 60);
 
     await this.emailService.sendMail({
       to: address,
       subject: '更改用户信息验证码',
-      html: `<p>你的验证码是 ${code}</p>`,
+      html: `<p>更改用户信息验证码是 ${code}，5分钟内有效</p>`,
     });
     return '发送成功';
   }

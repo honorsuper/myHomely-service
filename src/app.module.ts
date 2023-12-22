@@ -20,7 +20,6 @@ import { FeedBack } from './feedback/entities/feedback.entity';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [`.env.pro`],
-      // envFilePath: 'src/.env',
     }),
     JwtModule.registerAsync({
       global: true,
