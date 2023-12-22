@@ -14,13 +14,12 @@ import { APP_GUARD } from '@nestjs/core';
 import { LoginGuard } from './login/login.guard';
 import { FeedbackModule } from './feedback/feedback.module';
 import { FeedBack } from './feedback/entities/feedback.entity';
-import path from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [`.env.stage.pro`],
+      envFilePath: [`.env.pro`],
       // envFilePath: 'src/.env',
     }),
     JwtModule.registerAsync({
