@@ -45,7 +45,7 @@ nest_server_port=3000
 
 
 # jwt 配置
-jwt_secret=honor
+jwt_secret=xxxxxx
 jwt_access_token_expires_time=30m
 jwt_refresh_token_expres_time=7d
 ```
