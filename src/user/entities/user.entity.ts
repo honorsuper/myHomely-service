@@ -58,6 +58,30 @@ export class User {
     type: 'longtext',
   })
   colorConfig: string;
+  // 1、当前页面打开，2、新开一个tab
+  @Column({
+    comment: '点击类型',
+    default: '1',
+  })
+  clickType: string;
+  // 1、背白背景 2、图片背景
+  @Column({
+    comment: '背景类型',
+    default: '2',
+  })
+  bgType: string;
+
+  @Column({
+    comment: '黑白背景',
+    default: 'LIGHT',
+  })
+  commonBgType: string;
+
+  @Column({
+    comment: '图片背景',
+    default: '1',
+  })
+  pictureBgType: string;
 
   @CreateDateColumn()
   createTime: Date;

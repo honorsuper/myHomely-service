@@ -19,6 +19,8 @@ import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateColorDto, UpdateUserDto } from './dto/udpate-user.dto';
 import { CustomException } from 'src/exception/customException';
 import { verifyEmail } from 'src/utils';
+import { UpdateBasicInfoDto } from './dto/update-basic-setting.dto';
+import { UpdateDarkLightDto } from './dto/update-darkLight-mode.dto';
 
 @Controller('user')
 export class UserController {
@@ -147,8 +149,19 @@ export class UserController {
   }
 
   @Get('update_password-captcha')
-  async updatePasswordCaptcha(@Query('address') address: string) {
+  @RequireLogin()
+  async updatePasswordCaptcha(
+    @UserInfo('userId') userId: number,
+    @Query('address') address: string,
+  ) {
     verifyEmail(address);
+    const user = await this.userService.findUserDetailById(userId);
+    if (user.userInfo.email !== address) {
+      throw new CustomException(
+        1,
+        '该邮箱不为注册时所用邮箱，请输入正确的邮箱',
+      );
+    }
     const key = `update_password_captcha_${address}`;
     const res = await this.redisService.get(key);
     if (res) {
@@ -176,17 +189,25 @@ export class UserController {
   }
 
   @Get('update-captcha')
-  async updateCaptcha(@Query('address') address: string) {
+  @RequireLogin()
+  async updateCaptcha(
+    @UserInfo('userId') userId: number,
+    @Query('address') address: string,
+  ) {
     verifyEmail(address);
+    const user = await this.userService.findUserDetailById(userId);
+    if (user.userInfo.email !== address) {
+      throw new CustomException(
+        1,
+        '该邮箱不为注册时所用邮箱，请输入正确的邮箱',
+      );
+    }
     const key = `update_user_captcha_${address}`;
     const res = await this.redisService.get(key);
     if (res) {
       throw new CustomException(1, '请勿重复发送，请稍后重试');
     }
-    const pre = await this.userService.findUserByEmail(address);
-    if (pre) {
-      throw new CustomException(1, '该邮箱已使用');
-    }
+
     const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(key, code, 5 * 60);
@@ -224,5 +245,26 @@ export class UserController {
   @RequireLogin()
   async getIsFirst(@UserInfo('userId') userId: number) {
     return await this.userService.getIsFirst(userId);
+  }
+
+  @Post('update-basic-setting')
+  @RequireLogin()
+  async updateBasicSetting(
+    @UserInfo('userId') userId: number,
+    @Body() updateBasicInfoDto: UpdateBasicInfoDto,
+  ) {
+    return await this.userService.updateBasicInfo(userId, updateBasicInfoDto);
+  }
+
+  @Post('update-darkLight-mode')
+  @RequireLogin()
+  async updateDarkLightMode(
+    @UserInfo('userId') userId: number,
+    @Body() updateDarkLightDto: UpdateDarkLightDto,
+  ) {
+    return await this.userService.updateDarkLightMode(
+      userId,
+      updateDarkLightDto,
+    );
   }
 }

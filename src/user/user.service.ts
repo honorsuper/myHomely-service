@@ -11,6 +11,8 @@ import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateColorDto, UpdateUserDto } from './dto/udpate-user.dto';
 import { MenuService } from 'src/menu/menu.service';
 import { COLOR_LIST } from 'src/constants';
+import { UpdateBasicInfoDto } from './dto/update-basic-setting.dto';
+import { UpdateDarkLightDto } from './dto/update-darkLight-mode.dto';
 
 @Injectable()
 export class UserService {
@@ -82,6 +84,10 @@ export class UserService {
       createTime: user.createTime.getTime(),
       isFrozen: user.isFrozen,
       colorConfig: user.colorConfig,
+      clickType: user.clickType,
+      bgType: user.bgType,
+      commonBgType: user.commonBgType,
+      pictureBgType: user.pictureBgType,
     };
     return vo;
   }
@@ -114,6 +120,10 @@ export class UserService {
       createTime: user.createTime.getTime(),
       isFrozen: user.isFrozen,
       colorConfig: user.colorConfig,
+      clickType: user.clickType,
+      bgType: user.bgType,
+      commonBgType: user.commonBgType,
+      pictureBgType: user.pictureBgType,
     };
     return vo;
   }
@@ -255,5 +265,47 @@ export class UserService {
     return {
       isFirst: user.isFirst,
     };
+  }
+
+  async updateBasicInfo(
+    userId: number,
+    updateBasicInfoDto: UpdateBasicInfoDto,
+  ) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    user.clickType = updateBasicInfoDto.clickType;
+    user.bgType = updateBasicInfoDto.bgType;
+    user.pictureBgType = updateBasicInfoDto?.pictureBgType ?? '1';
+    try {
+      await this.userRepository.save(user);
+      return '基本信息修改成功';
+    } catch (e) {
+      // TODO
+      // this.logger.error(e, UserService);
+      return '基本信息修改失败';
+    }
+  }
+
+  async updateDarkLightMode(
+    userId: number,
+    updateDarkLightDto: UpdateDarkLightDto,
+  ) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    user.commonBgType = updateDarkLightDto.commonBgType;
+    try {
+      await this.userRepository.save(user);
+      return '修改成功';
+    } catch (e) {
+      // TODO
+      // this.logger.error(e, UserService);
+      return '修改失败';
+    }
   }
 }

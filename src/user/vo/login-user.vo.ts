@@ -12,6 +12,14 @@ interface UserInfo {
   createTime: number;
 
   colorConfig: string;
+
+  clickType: string;
+
+  bgType: string;
+
+  commonBgType: string;
+
+  pictureBgType: string;
 }
 export class LoginUserVo {
   userInfo: UserInfo;
