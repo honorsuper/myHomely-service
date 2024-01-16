@@ -143,9 +143,41 @@ export class UserController {
     return vo;
   }
 
+  // 忘记密码
+  @Post('forget_password')
+  async forgetPassword(@Body() passwordDto: UpdateUserPasswordDto) {
+    return await this.userService.forgetPassword(passwordDto);
+  }
+
+  @Get('forget_password-captcha')
+  async forgetPasswordCaptcha(@Query('address') address: string) {
+    verifyEmail(address);
+
+    const key = `forget_password_captcha_${address}`;
+    const res = await this.redisService.get(key);
+    if (res) {
+      throw new CustomException(1, '请勿重复发送，请稍后重试');
+    }
+    const code = Math.random().toString().slice(2, 8);
+
+    await this.redisService.set(key, code, 5 * 60);
+
+    await this.emailService.sendMail({
+      to: address,
+      subject: '修改密码验证码',
+      html: `<p>修改密码验证码是 ${code}，5分钟内有效</p>`,
+    });
+    return '发送成功';
+  }
+
+  // 更改密码
   @Post('update_password')
-  async updatePassword(@Body() passwordDto: UpdateUserPasswordDto) {
-    return await this.userService.updatePassword(passwordDto);
+  @RequireLogin()
+  async updatePassword(
+    @UserInfo('userId') userId: number,
+    @Body() passwordDto: UpdateUserPasswordDto,
+  ) {
+    return await this.userService.updatePassword(userId, passwordDto);
   }
 
   @Get('update_password-captcha')

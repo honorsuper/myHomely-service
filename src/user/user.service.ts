@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from './entities/user.entity';
 import { RedisService } from 'src/redis/redis.service';
+import { EmailService } from 'src/email/email.service';
 import { md5 } from 'src/utils';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginUserVo } from './vo/login-user.vo';
@@ -20,6 +21,8 @@ export class UserService {
   private userRepository: Repository<User>;
   @Inject(RedisService)
   private redisService: RedisService;
+  @Inject(EmailService)
+  private emailService: EmailService;
   @Inject(MenuService)
   private menuService: MenuService;
 
@@ -52,6 +55,11 @@ export class UserService {
     try {
       const res = await this.userRepository.save(newUser);
       await this.menuService.initColumn(res?.id);
+      this.emailService.sendMail({
+        to: 'honorsuper@126.com',
+        subject: '新人入驻',
+        html: `<p>新人入驻，用户名：${newUser.username}，邮箱：${newUser.email}</p>`,
+      });
       return '注册成功';
     } catch (e) {
       // TODO: 需要添加日志模块
@@ -68,6 +76,7 @@ export class UserService {
     });
 
     if (!user) {
+      console.log('111');
       throw new HttpException('登录异常', HttpStatus.BAD_REQUEST);
     }
 
@@ -137,9 +146,41 @@ export class UserService {
     return user?.username;
   }
 
-  async updatePassword(passwordDto: UpdateUserPasswordDto) {
+  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
     const captcha = await this.redisService.get(
       `update_password_captcha_${passwordDto.email}`,
+    );
+
+    if (!captcha) {
+      throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
+    }
+
+    if (passwordDto.captcha !== captcha) {
+      throw new HttpException('验证码不正确', HttpStatus.BAD_REQUEST);
+    }
+
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+    if (foundUser) {
+      foundUser.password = md5(passwordDto.password);
+    } else {
+      throw new HttpException('密码修改失败', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      await this.userRepository.save(foundUser);
+      return '密码修改成功';
+    } catch (e) {
+      // TODO: 以后
+      // this.logger.error(e, UserService);
+      return '密码修改失败';
+    }
+  }
+
+  async forgetPassword(passwordDto: UpdateUserPasswordDto) {
+    const captcha = await this.redisService.get(
+      `forget_password_captcha_${passwordDto.email}`,
     );
 
     if (!captcha) {
