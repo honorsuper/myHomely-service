@@ -14,6 +14,7 @@ import { MenuService } from 'src/menu/menu.service';
 import { COLOR_LIST } from 'src/constants';
 import { UpdateBasicInfoDto } from './dto/update-basic-setting.dto';
 import { UpdateDarkLightDto } from './dto/update-darkLight-mode.dto';
+import { ConfigService } from '@nestjs/config/dist/config.service';
 
 @Injectable()
 export class UserService {
@@ -25,6 +26,8 @@ export class UserService {
   private emailService: EmailService;
   @Inject(MenuService)
   private menuService: MenuService;
+  @Inject(ConfigService)
+  private configService: ConfigService;
 
   async register(user: RegisterUserDto) {
     const captcha = await this.redisService.get(`captcha_${user.email}`);
@@ -56,7 +59,7 @@ export class UserService {
       const res = await this.userRepository.save(newUser);
       await this.menuService.initColumn(res?.id);
       this.emailService.sendMail({
-        to: 'honorsuper@126.com',
+        to: this.configService.get('nodemailer_auth_user'),
         subject: '新人入驻',
         html: `<p>新人入驻，用户名：${newUser.username}，邮箱：${newUser.email}</p>`,
       });
