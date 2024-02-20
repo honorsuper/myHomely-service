@@ -9,6 +9,7 @@ export class AddColumnDto {
     message: '不能为空',
   })
   list: object;
+  notes?: string;
 }
 
 export class RenameColumnDto {
@@ -38,6 +39,7 @@ export class EditColumnDto {
     message: '不能为空',
   })
   list: object;
+  notes?: string;
 }
 
 export class DelColumnDto {

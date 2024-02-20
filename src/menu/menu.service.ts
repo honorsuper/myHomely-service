@@ -32,6 +32,7 @@ export class MenuService {
 
     const newMenuConfig = JSON.parse(findConfig.menuConfig);
     newMenuConfig.push({
+      notes: columnInfo.notes ?? '',
       mainTitle: columnInfo.mainTitle,
       list: columnInfo.list,
       id: v4(),
@@ -55,10 +56,12 @@ export class MenuService {
     });
 
     const newMenuConfig = JSON.parse(findConfig.menuConfig);
+
     (newMenuConfig || []).forEach((item) => {
       if (item.id === itemInfo.id) {
         item.list = itemInfo.list;
         item.mainTitle = itemInfo.mainTitle;
+        item.notes = itemInfo.notes ?? '';
       }
     });
 
